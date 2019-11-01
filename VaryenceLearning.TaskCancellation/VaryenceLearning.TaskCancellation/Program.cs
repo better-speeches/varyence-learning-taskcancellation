@@ -114,14 +114,27 @@ namespace VaryenceLearning.TaskCancellation
             }
         }
         
-        /// <summary>
-        /// Compute a value for a long time.
-        /// </summary>
-        /// <returns>The value computed.</returns>
-        /// <param name="loop">Number of iterations to do.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        private static Task<decimal> LongRunningCancellableOperation(
-            int loop, CancellationToken cancellationToken)
+        private static Task<decimal> LongRunningOperation(int loop)
+        {
+            // Start a task a return it
+            return Task.Run(() =>
+            {
+                decimal result = 0;
+
+                // Loop for a defined number of iterations
+                for (int i = 0; i < loop; i++)
+                {
+                    // Do something that takes times like a Thread.Sleep in .NET Core 2.
+                    Thread.Sleep(10);
+                    result += i;
+                }
+
+                return result;
+            });
+        }
+
+        private static Task<decimal> LongRunningCancellableOperation(int loop, 
+            CancellationToken cancellationToken)
         {
             Task<decimal> task = null;
 
@@ -151,32 +164,8 @@ namespace VaryenceLearning.TaskCancellation
             return task;
         }
         
-        /// <summary>
-        /// Compute a value for a long time.
-        /// </summary>
-        /// <returns>The value computed.</returns>
-        /// <param name="loop">Number of iterations to do.</param>
-        private static Task<decimal> LongRunningOperation(int loop)
-        {
-            // Start a task a return it
-            return Task.Run(() =>
-            {
-                decimal result = 0;
-
-                // Loop for a defined number of iterations
-                for (int i = 0; i < loop; i++)
-                {
-                    // Do something that takes times like a Thread.Sleep in .NET Core 2.
-                    Thread.Sleep(10);
-                    result += i;
-                }
-
-                return result;
-            });
-        }
-        
-        private static async Task<decimal> LongRunningOperationWithCancellationTokenAsync(
-            int loop, CancellationToken cancellationToken)
+        private static async Task<decimal> LongRunningOperationWithCancellationTokenAsync(int loop, 
+            CancellationToken cancellationToken)
         {
             // We create a TaskCompletionSource of decimal
             var taskCompletionSource = new TaskCompletionSource<decimal>();
